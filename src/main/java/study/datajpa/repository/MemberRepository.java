@@ -15,7 +15,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             countQuery = "select count(m) from Member m")
     Page<Member> findWithTeam(Pageable pageable);
 
-    @Modifying
+    @Modifying(clearAutomatically = true) // 벌크 연산은 영속성 컨텍스트를 무시하고 실행하기 때문에 쿼리 실행 후 영속성 컨텍스트를 초기화 필요
     @Query("update Member m set m.age = m.age + 1 where m.age >= 20")
     int bulkAgePlus(int age);
 }
