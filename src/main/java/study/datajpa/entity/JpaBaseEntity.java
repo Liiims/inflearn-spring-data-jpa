@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @MappedSuperclass
 @Getter
-public class BaseEntity {
+public class JpaBaseEntity {
 
     @Column(updatable = false)
     private LocalDateTime createdDate;
