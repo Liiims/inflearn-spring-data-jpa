@@ -1,5 +1,7 @@
 package study.datajpa.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -16,8 +18,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 class MemberRepositoryTest {
 
+    @PersistenceContext
+    EntityManager em;
+
     @Autowired
     MemberRepository memberRepository;
+
 
     @Test
     public void paging() {
@@ -67,5 +73,26 @@ class MemberRepositoryTest {
     @Test
     public void callCustom() {
         memberRepository.findMemberCustom();
+    }
+
+    @Test
+    public void jpaEventBaseEntity() throws InterruptedException {
+        // given
+        Member member = memberRepository.save(new Member("member1"));
+
+        Thread.sleep(100);
+        member.setUsername("member2");
+
+        em.flush();
+        em.clear();
+
+        // when
+        Member findMember = memberRepository.findById(member.getId()).get();
+
+        // then
+        System.out.println("findMember.getCreatedDate() = " + findMember.getCreateDate());
+        System.out.println("findMember.getUpdatedDate() = " + findMember.getLastModifiedDate());
+        System.out.println("findMember.getCreatedBy() = " + findMember.getCreatedBy());
+        System.out.println("findMember.getLastModifiedBy() = " + findMember.getLastModifiedBy());
     }
 }
